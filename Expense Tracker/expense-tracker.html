@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Futuristic Expense Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto&display=swap');
+  
+  body {
+    margin: 0;
+    padding: 2rem;
+    background: #0a0e18;
+    font-family: 'Roboto', sans-serif;
+    color: #00ffd8;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  .tracker-container {
+    background: #121c29;
+    width: 100%;
+    max-width: 520px;
+    border-radius: 20px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 0 25px #00ffe8aa, inset 0 0 30px #00ffca88;
+    display: flex;
+    flex-direction: column;
+  }
+
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 500;
+    font-size: 2.4rem;
+    letter-spacing: 3px;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 10px #00ffe8cc;
+  }
+
+  form {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    justify-content: space-between;
+  }
+
+  input[type="text"], input[type="number"] {
+    flex-grow: 1;
+    padding: 0.8rem 1rem;
+    border-radius: 15px;
+    border: none;
+    background: #002533;
+    color: #00ffd8dd;
+    font-size: 1.1rem;
+    box-shadow: inset 0 0 12px #00ffbba0;
+    transition: box-shadow 0.3s ease;
+  }
+
+  input[type="text"]:focus, input[type="number"]:focus {
+    outline: none;
+    box-shadow: inset 0 0 20px #00ffd8ff;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  button {
+    background: #00ffd8;
+    color: #003430;
+    font-weight: 700;
+    border: none;
+    padding: 0 1.8rem;
+    border-radius: 15px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    box-shadow: 0 0 16px #00ffd8aa;
+  }
+
+  button:hover {
+    background: #00d8bc;
+  }
+
+  .summary {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .summary div {
+    background: #00414d;
+    border-radius: 14px;
+    box-shadow: 0 0 20px #00ffdb77 inset;
+    padding: 1rem 1.2rem;
+    width: calc(33.33% - 1rem);
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    color: #00ffeedd;
+  }
+
+  .summary div span {
+    display: block;
+    font-size: 2rem;
+    margin-top: 0.3rem;
+    color: #00ffd8;
+  }
+
+  ul.expense-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    max-height: 350px;
+    overflow-y: auto;
+  }
+
+  li.expense-item {
+    background: #002d3a;
+    margin-bottom: 0.8rem;
+    border-radius: 14px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 0 15px #00ffd888;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.3s ease;
+  }
+
+  li.expense-item:hover {
+    background: #00525d;
+  }
+
+  .expense-info {
+    flex-grow: 1;
+    color: #00ffdb;
+  }
+
+  .expense-desc {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .expense-date {
+    font-size: 0.82rem;
+    opacity: 0.7;
+  }
+
+  .expense-amount {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #90ffbd;
+    margin-left: 1rem;
+    min-width: 110px;
+    text-align: right;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 0.6rem;
+    margin-left: 1rem;
+  }
+
+  .btn-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #00ffd8cc;
+    font-size: 1.4rem;
+    padding: 6px;
+    border-radius: 10px;
+    transition: background 0.25s ease;
+  }
+
+  .btn-icon:hover {
+    background: #00ffd822;
+  }
+
+  .btn-icon:focus {
+    outline: 2px solid #00ffd8cc;
+  }
+
+  /* Scrollbar styling */
+  ul.expense-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  ul.expense-list::-webkit-scrollbar-thumb {
+    background: #00ffd888;
+    border-radius: 5px;
+  }
+  ul.expense-list::-webkit-scrollbar-track {
+    background: #001a24;
+  }
+</style>
+</head>
+<body>
+
+<div class="tracker-container" aria-label="Futuristic Expense Tracker Application">
+  <h1>Expense Tracker</h1>
+
+  <form id="expense-form" aria-label="Add new expense">
+    <input type="text" id="desc-input" placeholder="Description" required aria-required="true" aria-label="Expense description" autocomplete="off" />
+    <input type="number" id="amount-input" min="0.01" step="0.01" placeholder="Amount (₹)" required aria-required="true" aria-label="Expense amount" />
+    <button type="submit" aria-label="Add expense">Add</button>
+  </form>
+
+  <div class="summary" aria-live="polite" aria-atomic="true">
+    <div aria-label="Total Income">
+      Income
+      <span id="income-amount">₹0.00</span>
+    </div>
+    <div aria-label="Total Expense">
+      Expense
+      <span id="expense-amount">₹0.00</span>
+    </div>
+    <div aria-label="Balance amount">
+      Balance
+      <span id="balance-amount">₹0.00</span>
+    </div>
+  </div>
+
+  <ul class="expense-list" id="expense-list" aria-live="polite" aria-relevant="additions removals">
+    <!-- Expense items will be listed here -->
+  </ul>
+</div>
+
+<script>
+  const expenseForm = document.getElementById('expense-form');
+  const descInput = document.getElementById('desc-input');
+  const amountInput = document.getElementById('amount-input');
+  const expenseList = document.getElementById('expense-list');
+  const incomeAmountEl = document.getElementById('income-amount');
+  const expenseAmountEl = document.getElementById('expense-amount');
+  const balanceAmountEl = document.getElementById('balance-amount');
+
+  let expenses = [];
+
+  function loadExpenses() {
+    expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+    expenses.forEach(expense => addExpenseToDOM(expense));
+    calculateSummary();
+  }
+
+  function saveExpenses() {
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+  }
+
+  function formatCurrency(amount) {
+    return `₹${amount.toFixed(2)}`;
+  }
+
+  function calculateSummary() {
+    let income = 0, expense = 0;
+    expenses.forEach(({amount}) => {
+      if (amount > 0) income += amount;
+      else expense += (-amount);
+    });
+    const balance = income - expense;
+
+    incomeAmountEl.textContent = formatCurrency(income);
+    expenseAmountEl.textContent = formatCurrency(expense);
+    balanceAmountEl.textContent = formatCurrency(balance);
+  }
+
+  function addExpenseToDOM(expense) {
+    const li = document.createElement('li');
+    li.className = 'expense-item';
+    li.dataset.id = expense.id;
+
+    const expInfo = document.createElement('div');
+    expInfo.className = 'expense-info';
+
+    const descEl = document.createElement('div');
+    descEl.className = 'expense-desc';
+    descEl.textContent = expense.description;
+
+    const dateEl = document.createElement('div');
+    dateEl.className = 'expense-date';
+    dateEl.textContent = (new Date(expense.date)).toLocaleDateString();
+
+    expInfo.appendChild(descEl);
+    expInfo.appendChild(dateEl);
+
+    const amountEl = document.createElement('div');
+    amountEl.className = 'expense-amount';
+    amountEl.textContent = formatCurrency(expense.amount);
+    amountEl.style.color = expense.amount >= 0 ? '#97ffac' : '#ff5353';
+
+    // Button group for edit & delete
+    const btnGroup = document.createElement('div');
+    btnGroup.className = 'btn-group';
+
+    // Edit button
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn-icon';
+    editBtn.setAttribute('aria-label', 'Edit expense');
+    editBtn.title = 'Edit expense';
+    editBtn.innerHTML = '&#9998;'; // pencil icon
+
+    editBtn.addEventListener('click', () => {
+      openEditModal(expense.id);
+    });
+
+    // Delete button
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'btn-icon';
+    deleteBtn.setAttribute('aria-label', 'Delete expense');
+    deleteBtn.title = 'Delete expense';
+    deleteBtn.innerHTML = '&#10006;';
+
+    deleteBtn.addEventListener('click', () => {
+      deleteExpense(expense.id);
+    });
+
+    btnGroup.appendChild(editBtn);
+    btnGroup.appendChild(deleteBtn);
+
+    li.appendChild(expInfo);
+    li.appendChild(amountEl);
+    li.appendChild(btnGroup);
+
+    expenseList.appendChild(li);
+  }
+
+  function clearExpenseList() {
+    expenseList.innerHTML = '';
+  }
+
+  function addExpense(expense) {
+    expenses.push(expense);
+    saveExpenses();
+    clearExpenseList();
+    expenses.forEach(addExpenseToDOM);
+    calculateSummary();
+  }
+
+  function updateExpense(updated) {
+    const idx = expenses.findIndex(e => e.id === updated.id);
+    if (idx === -1) return;
+    expenses[idx] = updated;
+    saveExpenses();
+    clearExpenseList();
+    expenses.forEach(addExpenseToDOM);
+    calculateSummary();
+  }
+
+  function deleteExpense(id) {
+    expenses = expenses.filter(e => e.id !== id);
+    saveExpenses();
+    clearExpenseList();
+    expenses.forEach(addExpenseToDOM);
+    calculateSummary();
+  }
+
+  // Modal for editing
+  let modal = null;
+
+  function openEditModal(id) {
+    const expense = expenses.find(e => e.id === id);
+    if (!expense) return;
+
+    if (!modal) {
+      modal = createModal();
+      document.body.appendChild(modal);
+    }
+    fillModal(expense);
+    modal.style.display = 'flex';
+    modal.querySelector('#edit-desc-input').focus();
+
+    modal.querySelector('#edit-save').onclick = () => {
+      const newDesc = modal.querySelector('#edit-desc-input').value.trim();
+      const newAmount = parseFloat(modal.querySelector('#edit-amount-input').value);
+      if (!newDesc || isNaN(newAmount)) {
+        alert('Please enter valid description and amount.');
+        return;
+      }
+
+      updateExpense({...expense, description: newDesc, amount: newAmount});
+      closeModal();
+    };
+
+    modal.querySelector('#edit-cancel').onclick = closeModal;
+  }
+
+  function closeModal() {
+    if (modal) modal.style.display = 'none';
+  }
+
+  function createModal() {
+    const modalWrapper = document.createElement('div');
+    modalWrapper.style.cssText = `
+      display: none;
+      position: fixed;
+      top:0; left:0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.75);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    `;
+    modalWrapper.setAttribute('role', 'dialog');
+    modalWrapper.setAttribute('aria-modal', 'true');
+    modalWrapper.setAttribute('aria-labelledby', 'modal-title');
+
+    modalWrapper.innerHTML = `
+      <div style="background:#001a2f; border-radius: 18px; padding: 2rem; width: 90vw; max-width: 420px; box-shadow: 0 0 20px #00ffd8cc;">
+        <h2 id="modal-title" style="color:#00ffd8; text-align:center; margin-top:0; font-family:'Orbitron',sans-serif;">Edit Expense</h2>
+        <label for="edit-desc-input" style="display:block; margin-bottom: 0.5rem; color:#00e0c6;">Description</label>
+        <input id="edit-desc-input" type="text" style="width: 100%; padding:0.6rem 1rem; font-size:1rem; border-radius:12px; border:none; box-shadow: inset 0 0 10px #00ffd8cc; color:#00ffd8; background:#002535;" aria-required="true"/>
+        <label for="edit-amount-input" style="display:block; margin-top:1rem; margin-bottom: 0.5rem; color:#00e0c6;">Amount (₹)</label>
+        <input id="edit-amount-input" type="number" step="0.01" style="width: 100%; padding:0.6rem 1rem; font-size:1rem; border-radius:12px; border:none; box-shadow: inset 0 0 10px #00ffd8cc; color:#00ffd8; background:#002535;" aria-required="true"/>
+        <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
+          <button id="edit-cancel" style="background:#003730; color:#00ffd8; border:none; border-radius:12px; padding:0.6rem 1.2rem; cursor:pointer;">Cancel</button>
+          <button id="edit-save" style="background:#00ffd8; color:#003730; border:none; border-radius:12px; padding:0.6rem 1.2rem; cursor:pointer;">Save</button>
+        </div>
+      </div>
+    `;
+
+    modalWrapper.addEventListener('click', e => {
+      if (e.target === modalWrapper) closeModal();
+    });
+
+    return modalWrapper;
+  }
+
+  function fillModal(expense) {
+    modal.querySelector('#edit-desc-input').value = expense.description;
+    modal.querySelector('#edit-amount-input').value = expense.amount;
+  }
+
+  // Form submit - Add new expense
+  expenseForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const description = descInput.value.trim();
+    const amount = parseFloat(amountInput.value);
+
+    if (!description) {
+      alert('Enter a valid description');
+      return;
+    }
+    if (isNaN(amount) || amount === 0) {
+      alert('Enter a non-zero amount');
+      return;
+    }
+
+    const expense = {
+      id: Date.now().toString(),
+      description,
+      amount,
+      date: new Date().toISOString(),
+    };
+
+    addExpense(expense);
+    descInput.value = '';
+    amountInput.value = '';
+    descInput.focus();
+  });
+
+  loadExpenses();
+</script>
+
+</body>
+</html>
