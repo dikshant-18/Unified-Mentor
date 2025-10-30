@@ -89,7 +89,7 @@ A modern single-page portfolio website built with React.js. It presents Dikshant
 1. Clone this repository or download the ZIP.  
 2. Navigate to the project directory.  
 3. Run `npm install` to install dependencies.  
-4. Run `npm start` to launch the development server.  
+4. Run `npm run dev` to launch the development server.  
 5. Open `http://localhost:3000` to view the portfolio site.
 
 ***
@@ -105,5 +105,3 @@ Phone: +91 7061171071
 This README serves as a comprehensive guide to understand, run, and explore the projects and portfolio created by Dikshant Shubhankar. For any queries or collaborations, feel free to reach out via email.
 
 ***
-
-Would you like me to generate this as a ready-to-save markdown file for download?
